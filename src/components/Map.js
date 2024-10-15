@@ -1,4 +1,3 @@
-// src/components/Map.js
 import React, { useEffect } from 'react';
 
 function Map({ lat, lng, markers }) {
@@ -9,13 +8,16 @@ function Map({ lat, lng, markers }) {
         zoom: 8,
       });
 
-      markers.forEach((marker) => {
-        new window.google.maps.Marker({
-          position: { lat: marker.lat, lng: marker.lng },
-          map,
-          title: marker.title,
+      // Check if markers exist and map them
+      if (markers && markers.length > 0) {
+        markers.forEach((marker) => {
+          new window.google.maps.Marker({
+            position: { lat: marker.lat, lng: marker.lng },
+            map,
+            title: marker.title,
+          });
         });
-      });
+      }
     }
   }, [lat, lng, markers]);
 

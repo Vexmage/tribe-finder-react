@@ -4,6 +4,8 @@ import ZipForm from './components/ZipForm';
 import TribeInfo from './components/TribeInfo';
 import Map from './components/Map';
 import getLocation from './utils/googleMaps';
+import tribeGeoJSON from './assets/TribalLeadership_Directory_3002994166247985726.geojson';
+
 
 function App() {
   const [tribes, setTribes] = useState([]);
@@ -11,17 +13,14 @@ function App() {
   const [markers, setMarkers] = useState([]);
 
   // Fetch tribe data on initial load or after zip change
-  const fetchTribes = async (zipcode) => {
+  const fetchTribes = async (zipcode, tribeCount = 5) => {
     try {
       const geoData = await getLocation(zipcode); // Call to Google Geocode API
       const lat = geoData.results[0].geometry.location.lat;
       const lng = geoData.results[0].geometry.location.lng;
-
-      // Simulate fetching tribe data (replace with actual GeoJSON fetch)
-      const tribeData = await fetch('./assets/TribalLeadership_Directory_3002994166247985726.geojson')
-        .then((res) => res.json())
-        .then((data) => data.features);
-
+  
+      const tribeData = await apiCall('./assets/TribalLeadership_Directory_3002994166247985726.geojson');
+  
       // Calculate distances and set tribe data
       const updatedTribes = tribeData.map((tribe) => {
         const tribeLat = tribe.geometry.coordinates[1];
@@ -29,15 +28,15 @@ function App() {
         const distance = getDistanceFromLatLonInKm(lat, lng, tribeLat, tribeLng);
         return { ...tribe, distance };
       });
-
+  
       updatedTribes.sort((a, b) => a.distance - b.distance);
-
+  
       setLocation({ lat, lng });
-      setTribes(updatedTribes.slice(0, 5)); // Show nearest 5 by default
-
+      setTribes(updatedTribes.slice(0, tribeCount)); // Use tribeCount passed from form submission
+  
       // Set markers for the map
       setMarkers(
-        updatedTribes.slice(0, 5).map((tribe) => ({
+        updatedTribes.slice(0, tribeCount).map((tribe) => ({
           lat: tribe.geometry.coordinates[1],
           lng: tribe.geometry.coordinates[0],
           title: tribe.properties.tribefullname,
@@ -47,6 +46,7 @@ function App() {
       console.error('Error fetching tribe data or location:', error);
     }
   };
+  
 
   return (
     <div>
