@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import ZipForm from './components/ZipForm';
 import TribeInfo from './components/TribeInfo';
 import Map from './components/Map';
 import getLocation from './utils/googleMaps';
-import tribeGeoJSON from './assets/TribalLeadership_Directory_3002994166247985726.geojson';
-
 
 function App() {
   const [tribes, setTribes] = useState([]);
@@ -13,40 +11,50 @@ function App() {
   const [markers, setMarkers] = useState([]);
 
   // Fetch tribe data on initial load or after zip change
-  const fetchTribes = async (zipcode, tribeCount = 5) => {
+  const fetchTribes = async (zipcode) => {
+    console.log("fetchTribes called with ZIP code:", zipcode);  // Debugging
+
     try {
-      const geoData = await getLocation(zipcode); // Call to Google Geocode API
-      const lat = geoData.results[0].geometry.location.lat;
-      const lng = geoData.results[0].geometry.location.lng;
-  
-      const tribeData = await apiCall('./assets/TribalLeadership_Directory_3002994166247985726.geojson');
-  
-      // Calculate distances and set tribe data
-      const updatedTribes = tribeData.map((tribe) => {
-        const tribeLat = tribe.geometry.coordinates[1];
-        const tribeLng = tribe.geometry.coordinates[0];
-        const distance = getDistanceFromLatLonInKm(lat, lng, tribeLat, tribeLng);
-        return { ...tribe, distance };
-      });
-  
-      updatedTribes.sort((a, b) => a.distance - b.distance);
-  
-      setLocation({ lat, lng });
-      setTribes(updatedTribes.slice(0, tribeCount)); // Use tribeCount passed from form submission
-  
-      // Set markers for the map
-      setMarkers(
-        updatedTribes.slice(0, tribeCount).map((tribe) => ({
+      const geoData = await getLocation(zipcode);  // Call to Google Geocode API
+      console.log("GeoData:", geoData);  // Debugging
+
+      if (geoData && geoData.results.length > 0) {
+        const lat = geoData.results[0].geometry.location.lat;
+        const lng = geoData.results[0].geometry.location.lng;
+        console.log("Location found:", lat, lng);  // Debugging
+
+        // Fetch tribe GeoJSON data from the correct public folder path
+        const response = await fetch('/TribalLeadership_Directory_3002994166247985726.geojson');
+        const tribeData = await response.json();  // Parse as JSON
+        console.log("Fetched Tribe Data:", tribeData);  // Debugging
+
+        // Calculate distances and set tribe data
+        const updatedTribes = tribeData.features.map((tribe) => {
+          const tribeLat = tribe.geometry.coordinates[1];
+          const tribeLng = tribe.geometry.coordinates[0];
+          const distance = getDistanceFromLatLonInKm(lat, lng, tribeLat, tribeLng);
+          return { ...tribe, distance };
+        });
+
+        updatedTribes.sort((a, b) => a.distance - b.distance);
+
+        setLocation({ lat, lng });
+        setTribes(updatedTribes.slice(0, 5));  // Show nearest 5 by default
+
+        // set markers for the map        
+        setMarkers(updatedTribes.slice(0, 5).map((tribe) => ({
           lat: tribe.geometry.coordinates[1],
           lng: tribe.geometry.coordinates[0],
           title: tribe.properties.tribefullname,
-        }))
-      );
+        })));
+  
+      } else {
+        console.error("No results found in the Geocode API response.");
+      }
     } catch (error) {
       console.error('Error fetching tribe data or location:', error);
     }
   };
-  
 
   return (
     <div>

@@ -6,7 +6,8 @@ function ZipForm({ onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(zipcode, tribeCount); // Make sure tribeCount is passed correctly
+    console.log("ZIP code entered:", zipcode); 
+    onSubmit(zipcode, tribeCount); 
   };
 
   return (
