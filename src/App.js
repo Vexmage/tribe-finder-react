@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import ZipForm from './components/ZipForm';
 import TribeInfo from './components/TribeInfo';
-import Map from './components/Map';
+import Map from "./components/Map";
+
+
 import getLocation from './utils/googleMaps';
 
 function App() {
@@ -10,7 +12,7 @@ function App() {
   const [location, setLocation] = useState({ lat: 44.0108407, lng: -123.0354098 });
   const [markers, setMarkers] = useState([]);
 
-  // Fetch tribe data on initial load or after zip change
+  // F etch tribe data on initial load or after zip change
   const fetchTribes = async (zipcode) => {
     console.log("fetchTribes called with ZIP code:", zipcode);  // Debugging
 
@@ -66,7 +68,9 @@ function App() {
             <ZipForm onSubmit={fetchTribes} />
           </div>
           <div className="col">
-            <Map lat={location.lat} lng={location.lng} markers={markers} />
+          <Map lat={location.lat} lng={location.lng} markers={markers} />
+
+
           </div>
         </div>
         <div className="row">

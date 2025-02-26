@@ -1,38 +1,50 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 
-function Map({ lat, lng, markers }) {
+function Map({ lat, lng, markers }) { // Make sure it's "Map" not "MapComponent"
   useEffect(() => {
-    if (window.google) {
-      const map = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat, lng },
-        zoom: 8,
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+    if (!apiKey) {
+      console.error("Google Maps API key is missing.");
+      return;
+    }
+
+    if (!document.getElementById("map")) {
+      console.error("Map container (#map) is missing.");
+      return;
+    }
+
+    if (!window.google || !window.google.maps) {
+      console.error("Google Maps API has not loaded yet.");
+      return;
+    }
+
+    console.log("Initializing Google Maps...");
+
+    const map = new window.google.maps.Map(document.getElementById("map"), {
+      center: { lat, lng },
+      zoom: 8,
+    });
+
+    console.log("Map initialized:", map);
+
+    if (markers && markers.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+
+      markers.forEach(({ lat, lng, title }) => {
+        new window.google.maps.Marker({
+          position: { lat, lng },
+          map,
+          title,
+        });
+        bounds.extend({ lat, lng });
       });
 
-      // Clear existing markers before setting new ones
-      const currentMarkers = [];
-
-      // Check if markers exist and map them
-      if (markers && markers.length > 0) {
-        markers.forEach((marker) => {
-          const newMarker = new window.google.maps.Marker({
-            position: { lat: marker.lat, lng: marker.lng },
-            map,
-            title: marker.title,
-          });
-          currentMarkers.push(newMarker);
-        });
-      }
-
-      // Optionally, fit the map to show all markers
-      if (currentMarkers.length > 0) {
-        const bounds = new window.google.maps.LatLngBounds();
-        currentMarkers.forEach((marker) => bounds.extend(marker.getPosition()));
-        map.fitBounds(bounds);
-      }
+      map.fitBounds(bounds);
     }
-  }, [lat, lng, markers]); // Depend on lat, lng, and markers
+  }, [lat, lng, markers]);
 
-  return <div id="map" style={{ height: '500px' }} />;
+  return <div id="map" style={{ height: "500px", width: "100%" }} />;
 }
 
-export default Map;
+export default Map; // Ensure this matches your App.js import
