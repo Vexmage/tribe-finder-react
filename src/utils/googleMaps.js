@@ -1,6 +1,6 @@
 // src/utils/googleMaps.js
 const geocodeUrl = "https://maps.googleapis.com/maps/api/geocode/json?region=us&address=";
-
+console.log("API Key from env:", process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
 export default async function getLocation(zipcode) {
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;  
     if (!apiKey) {

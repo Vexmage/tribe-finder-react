@@ -1,15 +1,22 @@
+/* === GENERAL STYLES === */
 body {
+  margin: 0;
   padding-top: 0;
-  margin-top: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background-image: url('/src/assets/images/ghostdance.png');
-}
-.bg-image {
-  height: auto;
-  min-height: 100vh;
-  width: 100vw;
   background-size: cover;
 }
 
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* === STRUCTURE === */
 .container {
   display: flex;
   flex-wrap: wrap;
@@ -23,106 +30,15 @@ body {
   min-width: 300px;
 }
 
-.form-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-input#zipcode {
-  width: 100%;
-  max-width: 500px;
-  margin-bottom: 15px;
-}
-.intro-box p, .intro-box h2 {
-    margin-bottom: 10px;
-    line-height: 1.4;
-}
-
-.intro-box p:last-child {
-    margin-bottom: 0;
-}
-
-.title {
-  margin: 20px;
-}
-#tribeResults {
-    max-height: 300px;  /* You can adjust this height to fit your design */
-    overflow-y: auto;
-    background-color: #ffc107;  /* Yellow background for visibility */
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-
 .form-group {
   min-width: 500px;
 }
-.footer {
-  position: relative;
-  bottom: 0;
-  width: 100%;
-  background-color: red;
-  text-align: center;
-}
+
 .navbar {
   margin-top: 0;
   padding-top: 0;
 }
 
-/* Apply to the welcome box */
-.welcome-box {
-  padding: 20px;
-  margin: 0; /* Remove any default margin */
-  margin-bottom: 0;  /* Ensure no extra margin at the bottom */
-  background-color: #ffc107;
-  border-radius: 10px;
-  display: block;
-    min-height: 0; /* Ensure no minimum height */
-  overflow: hidden; /* Ensure no overflow adds space */
-}
-
-
-.welcome-box h2 {
-  margin-top: 0;
-  margin-bottom: 0px; /* Reduce space between heading and text */
-  font-size: 28px; /* Adjust font size if needed */
-  font-weight: bold;
-}
-
-.welcome-box p {
-  margin: 0px 0; /* Reduce vertical space between paragraphs */
-  font-size: 18px; /* Adjust font size for better readability */
-  line-height: 1.5; /* Control the line height for readability */
-}
-
-/* Optional: Add more padding to make the text look well-spaced within the box */
-.welcome-box p:last-child {
-  margin-bottom: 0;  /* Remove extra bottom margin */
-}
-
-
-
-@media only screen and (max-width: 736px) {
-  input#zipcode {
-    max-width: 90vw;
-  }
-  .form-group {
-    min-width: 90vw;
-  }
-}
-.loading-indicator {
-  max-height: 50px;
-  max-width: 50px;
-}
-.chart-area {
-  margin: 25px;
-  max-width: 600px;
-}
-.has-error {
-  border: 2px solid red;
-}
 .footer {
   position: relative;
   bottom: 0;
@@ -133,7 +49,107 @@ input#zipcode {
   color: white;
 }
 
+/* === MAP & RESULTS SECTION === */
+.tribe-map-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  height: calc(100vh - 150px); /* Adjust if navbar is larger */
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.map-box, .info-box {
+  flex: 1 1 45%;
+  min-width: 300px;
+  height: 100%;
+}
+
+.map-box #map {
+  height: 100%;
+  width: 100%;
+}
+
+.info-box, #tribeResults {
+  background-color: #ffc107;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  max-height: 100%;
+}
+
+/* === FORM === */
+.form-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+input#zipcode {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 15px;
+}
+
+/* === TEXT BOXES === */
+.intro-box p, .intro-box h2,
+.welcome-box p, .welcome-box h2 {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.welcome-box {
+  padding: 20px;
+  margin: 0 0 0 0;
+  background-color: #ffc107;
+  border-radius: 10px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.welcome-box h2 {
+  margin-top: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.welcome-box p {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.title {
+  margin: 20px;
+}
+
+/* === MISC === */
+.loading-indicator {
+  max-height: 50px;
+  max-width: 50px;
+}
+
+.chart-area {
+  margin: 25px;
+  max-width: 600px;
+}
+
+.has-error {
+  border: 2px solid red;
+}
 
 .tribeMarker {
-  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
+  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black;
+}
+
+/* === RESPONSIVE === */
+@media only screen and (max-width: 736px) {
+  input#zipcode {
+    max-width: 90vw;
+  }
+
+  .form-group {
+    min-width: 90vw;
+  }
 }

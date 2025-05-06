@@ -1,50 +1,55 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
-function Map({ lat, lng, markers }) { // Make sure it's "Map" not "MapComponent"
+function Map({ lat, lng, markers }) {
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+
+  // Initialize map once when Google Maps is available
   useEffect(() => {
-    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-
-    if (!apiKey) {
-      console.error("Google Maps API key is missing.");
-      return;
-    }
-
-    if (!document.getElementById("map")) {
-      console.error("Map container (#map) is missing.");
-      return;
-    }
-
     if (!window.google || !window.google.maps) {
-      console.error("Google Maps API has not loaded yet.");
+      console.error("Google Maps API is not available yet.");
       return;
     }
+
+    if (!mapRef.current || mapInstanceRef.current) return;
 
     console.log("Initializing Google Maps...");
-
-    const map = new window.google.maps.Map(document.getElementById("map"), {
+    mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
       center: { lat, lng },
       zoom: 8,
     });
+  }, []);
 
-    console.log("Map initialized:", map);
+  // Update map center and redraw markers when props change
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !window.google || !window.google.maps) return;
 
-    if (markers && markers.length > 0) {
-      const bounds = new window.google.maps.LatLngBounds();
+    map.setCenter({ lat, lng });
 
-      markers.forEach(({ lat, lng, title }) => {
-        new window.google.maps.Marker({
-          position: { lat, lng },
-          map,
-          title,
-        });
-        bounds.extend({ lat, lng });
+    // Clear old markers
+    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current = [];
+
+    const bounds = new window.google.maps.LatLngBounds();
+
+    markers.forEach(({ lat, lng, title }) => {
+      const marker = new window.google.maps.Marker({
+        position: { lat, lng },
+        map,
+        title,
       });
+      markersRef.current.push(marker);
+      bounds.extend({ lat, lng });
+    });
 
+    if (markers.length > 0) {
       map.fitBounds(bounds);
     }
   }, [lat, lng, markers]);
 
-  return <div id="map" style={{ height: "500px", width: "100%" }} />;
+  return <div id="map" ref={mapRef} style={{ height: "500px", width: "100%" }} />;
 }
 
-export default Map; // Ensure this matches your App.js import
+export default Map;
