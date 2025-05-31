@@ -22,12 +22,13 @@ const pool = mysql.createPool({
 
 // API route to log search data
 app.post("/api/log-search", async (req, res) => {
+  console.log("🔍 Incoming log request:", req.body); // 👈 Add this
   try {
     const { zipCode, tribesReturned, manualZipEntry = true } = req.body;
     const userAgent = req.headers["user-agent"];
 
-    // Basic validation
     if (!zipCode || typeof tribesReturned !== "number") {
+      console.warn("⚠️ Invalid request format", req.body);
       return res.status(400).json({ error: "Invalid request format" });
     }
 
@@ -40,7 +41,7 @@ app.post("/api/log-search", async (req, res) => {
     conn.release();
     res.json({ message: "Logged successfully" });
   } catch (err) {
-    console.error("Error logging search:", err);
+    console.error("❌ Error logging search:", err);
     res.status(500).json({ error: "Failed to log search" });
   }
 });
