@@ -22,7 +22,7 @@ const pool = mysql.createPool({
 
 // API route to log search data
 app.post("/api/log-search", async (req, res) => {
-  console.log("🔍 Incoming log request:", req.body); // 👈 Add this
+  console.log("🔍 Incoming log request:", req.body); 
   try {
     const { zipCode, tribesReturned, manualZipEntry = true } = req.body;
     const userAgent = req.headers["user-agent"];
@@ -46,6 +46,20 @@ app.post("/api/log-search", async (req, res) => {
   }
 });
 
+// Get all recent search logs
+app.get("/api/search-logs", async (req, res) => {
+  try {
+    const conn = await pool.getConnection();
+    const [rows] = await conn.execute(
+      "SELECT * FROM search_logs ORDER BY timestamp DESC LIMIT 100"
+    );
+    conn.release();
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching search logs:", err);
+    res.status(500).json({ error: "Failed to retrieve logs" });
+  }
+});
 
 // Catch-all route to serve index.html for React Router
 app.get('*', (req, res) => {
